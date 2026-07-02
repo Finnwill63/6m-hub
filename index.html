@@ -149,33 +149,28 @@
 
   p.take{font-size:16px; line-height:1.7; color:#2B3340; margin:0 0 14px;}
 
-  /* toolkit list */
-  .tool-list{list-style:none; margin:0; padding:0;}
-  .tool-item{
-    display:grid; grid-template-columns:28px 1fr; gap:12px;
-    padding:14px 0; border-bottom:1px dashed var(--line);
+  /* level selector (CommonWeal-style) */
+  .level-select{margin:28px 0 20px;}
+  .level-select-label{font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); font-weight:700; margin-bottom:10px;}
+  .level-pills{display:flex; gap:8px;}
+  .level-pill{
+    appearance:none; border:1px solid var(--line); background:#fff; color:var(--navy);
+    width:40px; height:40px; border-radius:8px; font-weight:700; font-size:15px; cursor:pointer;
+    transition:all .15s ease;
   }
-  .tool-item:last-child{border-bottom:none;}
-  .tool-item .tn{
-    font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:var(--orange); line-height:1.4;
-  }
-  .tool-item .tt{font-weight:700; font-size:14.5px; color:var(--navy); margin-bottom:3px;}
-  .tool-item .td{font-size:14px; color:var(--ink-soft); line-height:1.55;}
-  .tool-item .tag{
-    display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.05em;
-    text-transform:uppercase; background:var(--paper); color:var(--navy);
-    padding:2px 7px; border-radius:2px; margin-top:6px;
-  }
+  .level-pill:hover{border-color:var(--orange);}
+  .level-pill.active{background:var(--navy); border-color:var(--navy); color:#fff;}
 
-  /* case examples */
-  .case-grid{display:grid; grid-template-columns:1fr; gap:12px;}
-  .case-card{
-    background:#fff; border:1px solid var(--line); border-radius:3px;
-    padding:16px 18px; position:relative;
+  .q-wrap{position:relative;}
+  .q-block{display:none; animation:fade .2s ease;}
+  .q-block.active{display:block;}
+  .q-tag{
+    display:inline-block; font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--orange); background:var(--paper); padding:4px 10px; border-radius:20px; margin-bottom:14px;
   }
-  .case-card .cname{font-family:'Cormorant Garamond',serif; font-weight:700; font-size:19px; color:var(--navy);}
-  .case-card .cwho{font-size:12.5px; color:var(--orange); font-weight:700; margin-bottom:6px;}
-  .case-card .cdesc{font-size:14px; color:var(--ink-soft); line-height:1.55;}
+  .q-text{font-size:clamp(24px,4vw,32px); color:var(--navy); font-weight:600; margin:0 0 8px; font-family:'Cormorant Garamond',serif;}
+  .q-sub{font-size:15px; color:var(--ink-soft); margin-bottom:22px;}
+  .q-resources{border-top:1px solid var(--line); padding-top:6px;}
 
   /* external resources */
   .res-grid{display:grid; grid-template-columns:1fr; gap:0;}
@@ -208,7 +203,7 @@
   <div class="hero-inner">
     <div class="eyebrow">A Venture Resource Hub</div>
     <h1>The <em>6M</em> Compass</h1>
-    <p class="lede">Six dimensions of a venture — Meaning, Market, Model, Management, Milestones, Money — built around Ted Zoller's 6M methodology. Not a staircase. A cycle you keep returning to as the venture sharpens.</p>
+    <p class="lede">Six dimensions of a venture — Meaning, Market, Model, Management, Money, Mindset — built around Ted Zoller's 6M methodology. Each dimension deepens across 6 levels, from broad to focused, with resources matched to the question you're actually asking right now.</p>
     <div class="hero-foot">Built for THBA and GIE student ventures · Will Cardwell, Professor of Practice, UNC Kenan-Flagler Business School</div>
   </div>
 </div>
@@ -218,9 +213,9 @@
     <div class="orbit-node" data-tab="meaning"><span class="num">I.</span><span class="name">Meaning</span><span class="sub">Problem, value prop</span></div>
     <div class="orbit-node" data-tab="market"><span class="num">II.</span><span class="name">Market</span><span class="sub">Beachhead, customer</span></div>
     <div class="orbit-node" data-tab="model"><span class="num">III.</span><span class="name">Model</span><span class="sub">How it makes money</span></div>
-    <div class="orbit-node" data-tab="management"><span class="num">IV.</span><span class="name">Management</span><span class="sub">Team, advisors</span></div>
-    <div class="orbit-node" data-tab="milestones"><span class="num">V.</span><span class="name">Milestones</span><span class="sub">Phasing, execution</span></div>
-    <div class="orbit-node" data-tab="money"><span class="num">VI.</span><span class="name">Money</span><span class="sub">Unit econ, capital</span></div>
+    <div class="orbit-node" data-tab="management"><span class="num">IV.</span><span class="name">Mgmt</span><span class="sub">Team, advisors</span></div>
+    <div class="orbit-node" data-tab="money"><span class="num">V.</span><span class="name">Money</span><span class="sub">Unit econ, capital</span></div>
+    <div class="orbit-node" data-tab="mindset"><span class="num">VI.</span><span class="name">Mindset</span><span class="sub">Founder psychology</span></div>
   </div>
 </div>
 
@@ -231,7 +226,7 @@
 <main id="main"></main>
 
 <footer>
-  The 6M methodology is the work of Ted D. Zoller, PhD — Director, UNC Entrepreneurship Center, Kenan-Flagler Business School. This hub paraphrases and curates from THBA / GIE course materials for student use; it is a study companion, not a substitute for Professor Zoller's course.<br>
+  The 6M methodology is the work of Ted D. Zoller, PhD — Director, UNC Entrepreneurship Center, Kenan-Flagler Business School. The 6-level question structure in this hub is adapted from the public diagnostic tool at commonweal.co, Zoller's own venture-coaching platform. This hub paraphrases and curates for student use; it is a study companion, not a substitute for Professor Zoller's course.<br>
   Will Cardwell · Professor of Practice, UNC Kenan-Flagler Business School
 </footer>
 

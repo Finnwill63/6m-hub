@@ -1,39 +1,19 @@
-// 6M Compass — render + interaction logic
+// 6M Compass — render + interaction logic, v2
+// Each module now renders a 6-level question selector (mirroring CommonWeal's
+// public diagnostic tool) with resources attached to the active level.
+
+let activeModule = ORDER[0];
+let activeLevel = 1;
 
 function buildTabbar(){
   const bar = document.getElementById('tabbar-inner');
-  bar.innerHTML = ORDER.map((key, i) => {
+  bar.innerHTML = ORDER.map(function(key, i){
     return '<button class="tab-btn' + (i===0 ? ' active' : '') + '" data-tab="' + key + '">' + SIXM[key].label + '</button>';
   }).join('');
 }
 
-function renderPanel(key){
-  const m = SIXM[key];
-
-  const toolsHtml = m.tools.map(function(item){
-    return (
-      '<li class="tool-item">' +
-        '<span class="tn">' + item.n + '</span>' +
-        '<div>' +
-          '<div class="tt">' + item.t + '</div>' +
-          '<div class="td">' + item.d + '</div>' +
-          '<span class="tag">' + item.tag + '</span>' +
-        '</div>' +
-      '</li>'
-    );
-  }).join('');
-
-  const casesHtml = m.cases.map(function(c){
-    return (
-      '<div class="case-card">' +
-        '<div class="cwho">' + c.who + '</div>' +
-        '<div class="cname">' + c.name + '</div>' +
-        '<div class="cdesc">' + c.desc + '</div>' +
-      '</div>'
-    );
-  }).join('');
-
-  const resHtml = m.external.map(function(r){
+function renderResources(list){
+  return list.map(function(r){
     const inner =
       '<div class="res-main">' +
         '<div class="rt">' + r.t + '</div>' +
@@ -45,6 +25,25 @@ function renderPanel(key){
     }
     return '<div class="res-item">' + inner + '</div>';
   }).join('');
+}
+
+function renderPanel(key){
+  const m = SIXM[key];
+
+  const levelPills = m.questions.map(function(item){
+    return '<button class="level-pill' + (item.level===1 ? ' active' : '') + '" data-level="' + item.level + '">' + item.level + '</button>';
+  }).join('');
+
+  const questionBlocks = m.questions.map(function(item){
+    return (
+      '<div class="q-block' + (item.level===1 ? ' active' : '') + '" data-level="' + item.level + '">' +
+        '<div class="q-tag">' + m.label + ': Level ' + item.level + '</div>' +
+        '<h3 class="q-text">' + item.q + '</h3>' +
+        '<div class="q-sub">' + item.sub + '</div>' +
+        '<div class="q-resources">' + renderResources(item.resources) + '</div>' +
+      '</div>'
+    );
+  }).join('');
 
   return (
     '<div class="m-head">' +
@@ -53,21 +52,12 @@ function renderPanel(key){
       '<div class="axis">' + m.axis + '</div>' +
     '</div>' +
     '<div class="vp-line">' + m.vp + '</div>' +
-    '<section class="block">' +
-      '<p class="take">' + m.take + '</p>' +
-    '</section>' +
-    '<section class="block">' +
-      '<h3><span class="dot"></span>Sprint Toolkit</h3>' +
-      '<ul class="tool-list">' + toolsHtml + '</ul>' +
-    '</section>' +
-    '<section class="block">' +
-      '<h3><span class="dot"></span>Case Examples</h3>' +
-      '<div class="case-grid">' + casesHtml + '</div>' +
-    '</section>' +
-    '<section class="block">' +
-      '<h3><span class="dot"></span>External Resources</h3>' +
-      '<div class="res-grid">' + resHtml + '</div>' +
-    '</section>'
+    '<p class="take">' + m.take + '</p>' +
+    '<div class="level-select">' +
+      '<div class="level-select-label">Select Level (1 = Broad, 6 = Focused)</div>' +
+      '<div class="level-pills">' + levelPills + '</div>' +
+    '</div>' +
+    '<div class="q-wrap">' + questionBlocks + '</div>'
   );
 }
 
@@ -79,14 +69,34 @@ function buildMain(){
 }
 
 function activateTab(key){
+  activeModule = key;
+  activeLevel = 1;
   document.querySelectorAll('.tab-btn').forEach(function(btn){
     btn.classList.toggle('active', btn.dataset.tab === key);
   });
   document.querySelectorAll('.panel').forEach(function(p){
     p.classList.toggle('active', p.id === 'panel-' + key);
   });
+  const panel = document.getElementById('panel-' + key);
+  if (panel){
+    panel.querySelectorAll('.level-pill').forEach(function(p){
+      p.classList.toggle('active', p.dataset.level === '1');
+    });
+    panel.querySelectorAll('.q-block').forEach(function(q){
+      q.classList.toggle('active', q.dataset.level === '1');
+    });
+  }
   const target = document.querySelector('.tabbar');
   if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function activateLevel(panelEl, level){
+  panelEl.querySelectorAll('.level-pill').forEach(function(p){
+    p.classList.toggle('active', p.dataset.level === String(level));
+  });
+  panelEl.querySelectorAll('.q-block').forEach(function(q){
+    q.classList.toggle('active', q.dataset.level === String(level));
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -103,5 +113,12 @@ document.addEventListener('DOMContentLoaded', function(){
     const node = e.target.closest('.orbit-node');
     if (!node) return;
     activateTab(node.dataset.tab);
+  });
+
+  document.getElementById('main').addEventListener('click', function(e){
+    const pill = e.target.closest('.level-pill');
+    if (!pill) return;
+    const panel = pill.closest('.panel');
+    activateLevel(panel, pill.dataset.level);
   });
 });
